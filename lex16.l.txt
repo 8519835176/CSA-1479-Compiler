@@ -1,0 +1,42 @@
+%option noyywrap
+
+%{
+#include <stdio.h>
+#include <string.h>
+#define OLD_WORD "old"
+#define NEW_WORD "new"
+%}
+
+OLD_WORD {OLD_WORD}
+ANY_CHAR [^ \n]+
+WS [ \t\n]
+
+%%
+{OLD_WORD} {
+    printf("%s", NEW_WORD);
+}
+{ANY_CHAR} {
+    printf("%s", yytext);
+}
+{WS} {
+    printf("%s", yytext);
+}
+. {
+    printf("%s", yytext);
+}
+%%
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
+        return 1;
+    }
+    yyin = fopen(argv[1], "r");
+    if (yyin == NULL) {
+        fprintf(stderr, "Error opening file: %s\n", argv[1]);
+        return 1;
+    }
+    yylex();
+    fclose(yyin);
+    return 0;
+}
