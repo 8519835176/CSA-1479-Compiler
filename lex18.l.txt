@@ -1,0 +1,51 @@
+%option noyywrap
+
+%{
+#include <stdio.h>
+#include <string.h>
+#define MAX_EMAIL_LENGTH 256
+%}
+
+ALPHA [a-zA-Z]
+DIGIT [0-9]
+SPECIAL [._-]
+LOCAL_PART [a-zA-Z0-9._-]+
+DOMAIN [a-zA-Z0-9.-]+
+AT "@"
+DOT "."
+WS [ \t\n]
+
+%%
+{LOCAL_PART} {
+    printf("Local part: %s\n", yytext);
+}
+{AT} {
+    printf("At symbol: %s\n", yytext);
+}
+{DOMAIN} {
+    printf("Domain: %s\n", yytext);
+}
+{DOT} {
+    printf("Dot: %s\n", yytext);
+}
+{WS} {
+    /* ignore whitespace */
+}
+. {
+    printf("Invalid character: %s\n", yytext);
+    return 1; /* invalid email address */
+}
+%%
+
+int main() {
+    char email[MAX_EMAIL_LENGTH];
+    printf("Enter an email address: ");
+    fgets(email, MAX_EMAIL_LENGTH, stdin);
+    yy_scan_string(email);
+    if (yylex() == 0) {
+        printf("Valid email address\n");
+    } else {
+        printf("Invalid email address\n");
+    }
+    return 0;
+}
