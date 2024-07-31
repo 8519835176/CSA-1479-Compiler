@@ -1,0 +1,39 @@
+%option noyywrap
+
+%{
+#include <stdio.h>
+
+int char_count = 0;
+int line_count = 0;
+int word_count = 0;
+%}
+
+CHAR [^ \t\n]+
+WS [ \t]
+NEWLINE \n
+
+%%
+{CHAR} {
+    char_count += strlen(yytext);
+    word_count++;
+}
+{WS} {
+    char_count += strlen(yytext);
+}
+{NEWLINE} {
+    char_count += strlen(yytext);
+    line_count++;
+}
+. {
+    char_count += strlen(yytext);
+}
+%%
+
+int main() {
+    yyin = stdin;
+    yylex();
+    printf("Number of characters: %d\n", char_count);
+    printf("Number of lines: %d\n", line_count);
+    printf("Number of words: %d\n", word_count);
+    return 0;
+}
